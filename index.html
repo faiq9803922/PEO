@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEO | Pakistan Esports Organization</title>
+    
+    <!-- Modern Font for Esports Vibe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,800;1,800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --primary-color: #0F5A2A;
+            --neon-green: #25D366;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --card-bg: rgba(15, 15, 15, 0.7);
+            --border-color: #222222;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body { 
+            background: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+        }
+
+        /* Live Background Canvas */
+        #pigmentCanvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -999; pointer-events: none;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 2.5rem 1rem 1.5rem;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: white;
+            text-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--neon-green);
+        }
+        header p { color: var(--neon-green); font-size: 0.95rem; font-weight: 600; letter-spacing: 1px; }
+
+        /* Sections & Tabs Animation */
+        .app-section {
+            display: none;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: slideFadeUp 0.4s ease forwards;
+        }
+        .app-section.active { display: block; }
+        
+        @keyframes slideFadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Cards & Containers */
+        .data-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.15);
+            border-color: rgba(37, 211, 102, 0.4);
+        }
+        .data-card h3 { color: var(--neon-green); margin-bottom: 8px; font-size: 1.1rem; }
+        .data-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* Auth Tabs */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .auth-tab.active {
+            color: var(--neon-green);
+            border-bottom: 2px solid var(--neon-green);
+        }
+
+        /* Forms & Inputs */
+        .form-group { margin-bottom: 15px; }
+        input, textarea {
+            width: 100%; padding: 14px; border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color);
+            color: white; outline: none; transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        input:focus, textarea:focus { 
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(37, 211, 102, 0.2);
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white; border: none; padding: 14px 24px;
+            border-radius: 8px; cursor: pointer; font-weight: 600;
+            width: 100%; transition: all 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+            display: block; text-decoration: none; text-align: center;
+        }
+        .btn:hover { background: var(--neon-green); transform: translateY(-1px); }
+        .btn-danger { background: #b81d1d; }
+        .btn-danger:hover { background: #d32525; }
+        .btn-support { background: #25D366; color: #000; margin-bottom: 10px; }
+        .btn-support:hover { background: #1eb955; }
+
+        /* UI Elements */
+        .admin-box {
+            background: rgba(20, 20, 20, 0.8); border: 1px dashed var(--primary-color);
+            padding: 20px; border-radius: 12px; margin-bottom: 20px;
+        }
+        .user-profile-header {
+            text-align: center; padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .user-profile-header h2 { color: var(--neon-green); font-size: 1.8rem; }
+        .user-profile-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 12px 0; z-index: 1000;
+        }
+        .nav-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 0.75rem; font-weight: 600; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            transition: color 0.3s, transform 0.2s; gap: 4px;
+        }
+        .nav-btn:hover { transform: scale(1.05); }
+        .nav-btn.active { color: var(--neon-green); }
+        .nav-icon { font-size: 1.4rem; }
+        
+    </style>
+</head>
+<body>
+
+    <!-- Live Green Pigment Background -->
+    <canvas id="pigmentCanvas"></canvas>
+    <script>
+        const cvs = document.getElementById('pigmentCanvas'), ctx = cvs.getContext('2d');
+        let w, h, parts = [];
+        function resize() { w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        for(let i=0; i<30; i++) parts.push({
+            x: Math.random()*w, y: Math.random()*h, s: Math.random()*120+50,
+            vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
+            c: ['rgba(15, 90, 42, 0.1)', 'rgba(37, 211, 102, 0.03)'][Math.floor(Math.random()*2)]
+        });
+        function anim() {
+            ctx.clearRect(0,0,w,h);
+            parts.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < -p.s) p.x = w+p.s; if(p.x > w+p.s) p.x = -p.s;
+                if(p.y < -p.s) p.y = h+p.s; if(p.y > h+p.s) p.y = -p.s;
+                ctx.beginPath();
+                let g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s);
+                g.addColorStop(0, p.c); g.addColorStop(1, 'rgba(10,10,10,0)');
+                ctx.fillStyle = g; ctx.arc(p.x,p.y,p.s,0,Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(anim);
+        }
+        anim();
+    </script>
+
+    <header>
+        <h1>PEO</h1>
+        <p>PAKISTAN ESPORTS ORGANIZATION</p>
+    </header>
+
+    <!-- SECTION 1: UPDATES -->
+    <section id="updates" class="app-section active">
+        <h2 class="section-title">Latest Updates</h2>
+        <div id="updates-container">
+            <p style="color:var(--text-muted); text-align:center;">Loading updates...</p>
+        </div>
+    </section>
+
+    <!-- SECTION 2: MATCHES -->
+    <section id="matches" class="app-section">
+        <h2 class="section-title">Upcoming & Live Matches</h2>
+        <div id="matches-container">
+            <p style="color:var(--text-muted); text-align:center;">Loading matches...</p>
+        </div>
+    </section>
+
+    <!-- SECTION 3: PTS TABLE -->
+    <section id="pts-table" class="app-section">
+        <h2 class="section-title">Points Table</h2>
+        <div id="pts-container">
+            <p style="color:var(--text-muted); text-align:center;">Loading points table...</p>
+        </div>
+    </section>
+
+    <!-- SECTION 4: PROFILE & ADMIN -->
+    <section id="profile" class="app-section">
+        
+        <!-- Auth Section (Visible to Guests) -->
+        <div id="auth-section" class="data-card">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login">Login</div>
+                <div class="auth-tab" id="tab-register">Register</div>
+            </div>
+
+            <p id="auth-error" style="color:#ff4d4d; margin-bottom:15px; font-size:0.9rem; display:none; text-align:center;"></p>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="form-group"><input type="email" id="login-email" placeholder="Email Address"></div>
+                <div class="form-group"><input type="password" id="login-pass" placeholder="Password"></div>
+                <button class="btn" id="login-btn">Secure Login</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" style="display:none;">
+                <div class="form-group"><input type="text" id="reg-nick" placeholder="In-Game Nickname"></div>
+                <div class="form-group"><input type="email" id="reg-email" placeholder="Email Address"></div>
+                <div class="form-group"><input type="password" id="reg-pass" placeholder="Password"></div>
+                <div class="form-group"><input type="password" id="reg-conf-pass" placeholder="Confirm Password"></div>
+                <button class="btn" id="reg-btn">Create Account</button>
+            </div>
+        </div>
+
+        <!-- Standard User Profile -->
+        <div id="user-section" class="data-card" style="display: none;">
+            <div class="user-profile-header">
+                <h2 id="display-nick">Player</h2>
+                <p id="display-email">user@gmail.com</p>
+            </div>
+            <a href="https://wa.me/923000000000" target="_blank" class="btn btn-support">💬 Customer Support</a>
+            <button class="btn btn-danger user-logout-btn">Log Out</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-section" style="display: none;">
+            <div class="user-profile-header">
+                <h2>Admin Console</h2>
+                <p>Restricted Access</p>
+            </div>
+            
+            <div class="admin-box">
+                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Add New Update</h3>
+                <input type="text" id="upd-title" placeholder="Update Title" class="form-group">
+                <textarea id="upd-desc" placeholder="Update Description Details..." rows="3" class="form-group"></textarea>
+                <button class="btn" id="add-update-btn">Post Update</button>
+            </div>
+
+            <div class="admin-box">
+                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Add New Match</h3>
+                <input type="text" id="match-title" placeholder="Match (e.g. Team A vs Team B)" class="form-group">
+                <input type="text" id="match-time" placeholder="Time & Date (e.g. 8:00 PM, 12th Oct)" class="form-group">
+                <button class="btn" id="add-match-btn">Post Match</button>
+            </div>
+
+            <div class="admin-box">
+                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Update Points Table Entry</h3>
+                <input type="text" id="pt-team" placeholder="Team Name" class="form-group">
+                <input type="number" id="pt-score" placeholder="Total Points" class="form-group">
+                <button class="btn" id="add-pt-btn">Add Team</button>
+            </div>
+
+            <button class="btn btn-danger user-logout-btn">Secure Log Out</button>
+        </div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchTab('updates', this)">
+            <span class="nav-icon">📰</span>
+            UPDATES
+        </button>
+        <button class="nav-btn" onclick="switchTab('matches', this)">
+            <span class="nav-icon">⚔️</span>
+            MATCHES
+        </button>
+        <button class="nav-btn" onclick="switchTab('pts-table', this)">
+            <span class="nav-icon">🏆</span>
+            TABLE
+        </button>
+        <button class="nav-btn" onclick="switchTab('profile', this)">
+            <span class="nav-icon">👤</span>
+            PROFILE
+        </button>
+    </nav>
+
+    <!-- Tab Switching Logic -->
+    <script>
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+
+        // Auth Tabs Toggle
+        document.getElementById('tab-login').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('tab-register').classList.remove('active');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('auth-error').style.display = 'none';
+        });
+
+        document.getElementById('tab-register').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('tab-login').classList.remove('active');
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('auth-error').style.display = 'none';
+        });
+    </script>
+
+    <!-- Firebase Integration Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKtQSjsiyC8hKNP6_YIngnXqPI19rjr9w",
+            authDomain: "pak-esp-org.firebaseapp.com",
+            projectId: "pak-esp-org",
+            storageBucket: "pak-esp-org.firebasestorage.app",
+            messagingSenderId: "185358231882",
+            appId: "1:185358231882:web:c192f827b406e06fe0f9b3",
+            measurementId: "G-PNSR0YYB5R"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- DOM Elements ---
+        const authSection = document.getElementById('auth-section');
+        const userSection = document.getElementById('user-section');
+        const adminSection = document.getElementById('admin-section');
+        const authError = document.getElementById('auth-error');
+
+        function showError(msg) {
+            authError.textContent = msg;
+            authError.style.display = 'block';
+        }
+
+        // --- AUTH: Login & Register ---
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            authError.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, pass).catch(err => showError(err.message));
+        });
+
+        document.getElementById('reg-btn').addEventListener('click', () => {
+            const nick = document.getElementById('reg-nick').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const confPass = document.getElementById('reg-conf-pass').value;
+            
+            authError.style.display = 'none';
+            if(!nick) return showError("Nickname is required!");
+            if(pass !== confPass) return showError("Passwords do not match!");
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then((cred) => {
+                    return updateProfile(cred.user, { displayName: nick });
+                })
+                .catch(err => showError(err.message));
+        });
+
+        document.querySelectorAll('.user-logout-btn').forEach(btn => {
+            btn.addEventListener('click', () => signOut(auth));
+        });
+
+        // --- Auth State Routing ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authSection.style.display = 'none';
+                
+                // Admin specific routing
+                if (user.email === 'admin@gmail.com') {
+                    adminSection.style.display = 'block';
+                    userSection.style.display = 'none';
+                } else {
+                    // Standard User
+                    adminSection.style.display = 'none';
+                    userSection.style.display = 'block';
+                    document.getElementById('display-nick').textContent = user.displayName || 'Player';
+                    document.getElementById('display-email').textContent = user.email;
+                }
+            } else {
+                // Logged out guest
+                authSection.style.display = 'block';
+                userSection.style.display = 'none';
+                adminSection.style.display = 'none';
+            }
+        });
+
+        // --- ADMIN: Database Controls ---
+        document.getElementById('add-update-btn').addEventListener('click', async () => {
+            const title = document.getElementById('upd-title').value;
+            const desc = document.getElementById('upd-desc').value;
+            if(!title || !desc) return alert("Fill all fields");
+            await addDoc(collection(db, "updates"), { title, desc, createdAt: serverTimestamp() });
+            alert("Update Added!");
+            loadData(); 
+        });
+
+        document.getElementById('add-match-btn').addEventListener('click', async () => {
+            const title = document.getElementById('match-title').value;
+            const time = document.getElementById('match-time').value;
+            if(!title || !time) return alert("Fill all fields");
+            await addDoc(collection(db, "matches"), { title, time, createdAt: serverTimestamp() });
+            alert("Match Added!");
+            loadData();
+        });
+
+        document.getElementById('add-pt-btn').addEventListener('click', async () => {
+            const team = document.getElementById('pt-team').value;
+            const score = parseInt(document.getElementById('pt-score').value);
+            if(!team || isNaN(score)) return alert("Fill all fields correctly");
+            await addDoc(collection(db, "pts_table"), { team, score, createdAt: serverTimestamp() });
+            alert("Points Table Updated!");
+            loadData();
+        });
+
+        // --- FETCH DATA FOR USERS ---
+        async function loadData() {
+            // Updates
+            const updQuery = query(collection(db, "updates"), orderBy("createdAt", "desc"));
+            const updSnap = await getDocs(updQuery);
+            let updHTML = '';
+            updSnap.forEach(doc => {
+                const data = doc.data();
+                updHTML += `<div class="data-card"><h3>${data.title}</h3><p>${data.desc}</p></div>`;
+            });
+            document.getElementById('updates-container').innerHTML = updHTML || "<p style='text-align:center;'>No updates yet.</p>";
+
+            // Matches
+            const matchQuery = query(collection(db, "matches"), orderBy("createdAt", "desc"));
+            const matchSnap = await getDocs(matchQuery);
+            let matchHTML = '';
+            matchSnap.forEach(doc => {
+                const data = doc.data();
+                matchHTML += `<div class="data-card"><h3>${data.title}</h3><p>⏰ ${data.time}</p></div>`;
+            });
+            document.getElementById('matches-container').innerHTML = matchHTML || "<p style='text-align:center;'>No matches scheduled.</p>";
+
+            // Pts Table 
+            const ptsQuery = query(collection(db, "pts_table"), orderBy("score", "desc"));
+            const ptsSnap = await getDocs(ptsQuery);
+            let ptsHTML = '';
+            let rank = 1;
+            ptsSnap.forEach(doc => {
+                const data = doc.data();
+                ptsHTML += `<div class="data-card" style="display:flex; justify-content:space-between; padding: 15px 20px;">
+                                <div><strong style="color:var(--neon-green)">#${rank}</strong> &nbsp; ${data.team}</div>
+                                <div><strong>${data.score} Pts</strong></div>
+                            </div>`;
+                rank++;
+            });
+            document.getElementById('pts-container').innerHTML = ptsHTML || "<p style='text-align:center;'>Points table is empty.</p>";
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
