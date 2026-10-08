@@ -1,517 +1,3251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PEO | Pakistan Esports Organization</title>
-    
-    <!-- Modern Font for Esports Vibe -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,800;1,800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-color: #050505;
-            --primary-color: #0F5A2A;
-            --neon-green: #25D366;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --card-bg: rgba(15, 15, 15, 0.7);
-            --border-color: #222222;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="SRV ESPORTS - Esports Match Management">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+  <title>SRV ESPORTS</title>
 
-        body { 
-            background: var(--bg-color);
-            color: var(--text-main);
-            padding-bottom: 90px;
-            overflow-x: hidden;
-        }
+  <style>
+    :root {
+      --bg: #070707;
+      --bg2: #0d0d0f;
+      --card: #121214;
+      --card2: #18181b;
+      --border: rgba(255,255,255,.08);
+      --text: #f5f5f5;
+      --muted: #98989f;
+      --red: #e5092f;
+      --red2: #ff2448;
+      --green: #25d366;
+      --yellow: #ffc107;
+      --blue: #4da3ff;
+      --danger: #ff3b30;
+      --shadow: 0 15px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
 
-        /* Live Background Canvas */
-        #pigmentCanvas {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -999; pointer-events: none;
-        }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        /* Header */
-        header {
-            text-align: center;
-            padding: 2.5rem 1rem 1.5rem;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
-        }
-        header h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            font-style: italic;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: white;
-            text-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--neon-green);
-        }
-        header p { color: var(--neon-green); font-size: 0.95rem; font-weight: 600; letter-spacing: 1px; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-        /* Sections & Tabs Animation */
-        .app-section {
-            display: none;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            animation: slideFadeUp 0.4s ease forwards;
-        }
-        .app-section.active { display: block; }
-        
-        @keyframes slideFadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(229,9,47,.14), transparent 35%),
+        linear-gradient(180deg, #090909 0%, #050505 100%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-        .section-title {
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 8px;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
 
-        /* Cards & Containers */
-        .data-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(12px);
-            transition: all 0.3s ease;
-        }
-        .data-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.15);
-            border-color: rgba(37, 211, 102, 0.4);
-        }
-        .data-card h3 { color: var(--neon-green); margin-bottom: 8px; font-size: 1.1rem; }
-        .data-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+    button {
+      cursor: pointer;
+    }
 
-        /* Auth Tabs */
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        .auth-tab.active {
-            color: var(--neon-green);
-            border-bottom: 2px solid var(--neon-green);
-        }
+    .hidden {
+      display: none !important;
+    }
 
-        /* Forms & Inputs */
-        .form-group { margin-bottom: 15px; }
-        input, textarea {
-            width: 100%; padding: 14px; border-radius: 8px;
-            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color);
-            color: white; outline: none; transition: all 0.3s;
-            font-size: 0.95rem;
-        }
-        input:focus, textarea:focus { 
-            border-color: var(--neon-green);
-            box-shadow: 0 0 10px rgba(37, 211, 102, 0.2);
-        }
-        
-        .btn {
-            background: var(--primary-color);
-            color: white; border: none; padding: 14px 24px;
-            border-radius: 8px; cursor: pointer; font-weight: 600;
-            width: 100%; transition: all 0.3s;
-            text-transform: uppercase; letter-spacing: 1px;
-            display: block; text-decoration: none; text-align: center;
-        }
-        .btn:hover { background: var(--neon-green); transform: translateY(-1px); }
-        .btn-danger { background: #b81d1d; }
-        .btn-danger:hover { background: #d32525; }
-        .btn-support { background: #25D366; color: #000; margin-bottom: 10px; }
-        .btn-support:hover { background: #1eb955; }
+    /* ================= HEADER ================= */
 
-        /* UI Elements */
-        .admin-box {
-            background: rgba(20, 20, 20, 0.8); border: 1px dashed var(--primary-color);
-            padding: 20px; border-radius: 12px; margin-bottom: 20px;
-        }
-        .user-profile-header {
-            text-align: center; padding: 20px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-        .user-profile-header h2 { color: var(--neon-green); font-size: 1.8rem; }
-        .user-profile-header p { color: var(--text-muted); font-size: 0.9rem; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(7,7,7,.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(5, 5, 5, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 12px 0; z-index: 1000;
-        }
-        .nav-btn {
-            background: none; border: none; color: var(--text-muted);
-            font-size: 0.75rem; font-weight: 600; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center;
-            transition: color 0.3s, transform 0.2s; gap: 4px;
-        }
-        .nav-btn:hover { transform: scale(1.05); }
-        .nav-btn.active { color: var(--neon-green); }
-        .nav-icon { font-size: 1.4rem; }
-        
-    </style>
+    .menu-btn {
+      position: absolute;
+      left: 14px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #111;
+      color: white;
+      font-size: 22px;
+    }
+
+    .menu-btn:active {
+      transform: scale(.94);
+    }
+
+    .brand {
+      text-align: center;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 8px;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    /* ================= MAIN ================= */
+
+    main {
+      width: min(100% - 24px, 900px);
+      margin: 0 auto;
+      padding: 22px 0 70px;
+    }
+
+    .hero {
+      padding: 8px 2px 22px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 9vw, 52px);
+      line-height: .95;
+      font-weight: 950;
+      letter-spacing: -2px;
+    }
+
+    .hero h1 span {
+      color: var(--red);
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin: 10px 0 0;
+      font-size: 12px;
+      letter-spacing: 1.7px;
+      font-weight: 700;
+    }
+
+    /* ================= LINEUPS ================= */
+
+    .lineup-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 26px;
+    }
+
+    .lineup-tab {
+      min-height: 54px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--card);
+      color: #aaa;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      transition: .2s ease;
+    }
+
+    .lineup-tab.active {
+      color: white;
+      border-color: rgba(229,9,47,.55);
+      background:
+        linear-gradient(135deg, rgba(229,9,47,.20), rgba(229,9,47,.04)),
+        var(--card);
+      box-shadow: 0 0 24px rgba(229,9,47,.10);
+    }
+
+    .lineup-tab:active {
+      transform: scale(.98);
+    }
+
+    /* ================= SECTION ================= */
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 2px 13px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .match-count {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* ================= MATCH CARD ================= */
+
+    .matches {
+      display: grid;
+      gap: 13px;
+    }
+
+    .match-card {
+      position: relative;
+      overflow: hidden;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.025), transparent 55%),
+        var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .match-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--red);
+    }
+
+    .match-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .match-name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 950;
+      line-height: 1.1;
+    }
+
+    .lineup-label {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      background: rgba(229,9,47,.10);
+      color: #ff647e;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .7px;
+    }
+
+    .status {
+      flex-shrink: 0;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+
+    .status.upcoming {
+      color: var(--yellow);
+      background: rgba(255,193,7,.10);
+    }
+
+    .status.live {
+      color: #32ef75;
+      background: rgba(37,211,102,.10);
+    }
+
+    .status.completed {
+      color: #aaa;
+      background: rgba(255,255,255,.07);
+    }
+
+    .status.cancelled {
+      color: #ff6666;
+      background: rgba(255,59,48,.10);
+    }
+
+    .match-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .detail {
+      color: #bbb;
+      font-size: 11px;
+    }
+
+    .detail strong {
+      color: #eee;
+      font-weight: 800;
+    }
+
+    .description {
+      margin: 15px 0 0;
+      padding-top: 13px;
+      border-top: 1px solid var(--border);
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .idp-btn {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--red2), var(--red));
+      color: white;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .7px;
+      box-shadow: 0 8px 25px rgba(229,9,47,.16);
+    }
+
+    .idp-btn:active {
+      transform: scale(.98);
+    }
+
+    /* ================= EMPTY / LOADING ================= */
+
+    .state-box {
+      padding: 35px 18px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(255,255,255,.015);
+    }
+
+    .state-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .state-title {
+      color: #eee;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .state-text {
+      margin-top: 7px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    /* ================= DRAWER ================= */
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0,0,0,.65);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      z-index: 301;
+      top: 0;
+      left: 0;
+      width: min(86vw, 340px);
+      height: 100%;
+      padding: 22px 17px;
+      background: #0c0c0e;
+      border-right: 1px solid var(--border);
+      transform: translateX(-105%);
+      transition: transform .28s ease;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-title {
+      margin: 0 0 5px;
+      font-size: 20px;
+      font-weight: 950;
+    }
+
+    .drawer-subtitle {
+      margin: 0 0 25px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .drawer-btn {
+      width: 100%;
+      min-height: 50px;
+      margin-bottom: 9px;
+      padding: 0 15px;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--card);
+      color: #eee;
+      font-weight: 800;
+    }
+
+    .drawer-btn.danger {
+      color: #ff6878;
+    }
+
+    .drawer-btn:active {
+      transform: scale(.98);
+    }
+
+    /* ================= MODAL ================= */
+
+    .modal-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(7px);
+    }
+
+    .modal {
+      width: min(100%, 500px);
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 21px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: #101012;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6);
+      animation: modalIn .2s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #18181a;
+      color: white;
+      font-size: 18px;
+    }
+
+    /* ================= IDP MODAL ================= */
+
+    .idp-display {
+      padding: 24px 12px;
+      margin: 5px 0 15px;
+      border-radius: 15px;
+      text-align: center;
+      background: #080808;
+      border: 1px solid var(--border);
+    }
+
+    .idp-value {
+      word-break: break-all;
+      color: white;
+      font-size: clamp(24px, 7vw, 38px);
+      font-weight: 950;
+      letter-spacing: 2px;
+    }
+
+    .idp-unavailable {
+      color: #aaa;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    /* ================= FORMS ================= */
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 7px;
+      color: #bdbdc2;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 13px;
+      outline: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #09090a;
+      color: white;
+      font-size: 13px;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder {
+      color: #666;
+    }
+
+    .textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: rgba(229,9,47,.65);
+      box-shadow: 0 0 0 3px rgba(229,9,47,.07);
+    }
+
+    .password-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .password-row .input {
+      flex: 1;
+    }
+
+    .mini-btn {
+      min-width: 82px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #18181a;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--red2), var(--red));
+      color: white;
+    }
+
+    .secondary-btn {
+      margin-top: 9px;
+      background: #202023;
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    .danger-btn {
+      background: rgba(255,59,48,.12);
+      color: #ff6460;
+      border: 1px solid rgba(255,59,48,.2);
+    }
+
+    .primary-btn:active,
+    .secondary-btn:active,
+    .danger-btn:active,
+    .mini-btn:active {
+      transform: scale(.98);
+    }
+
+    /* ================= ADMIN ================= */
+
+    .admin-panel {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--card);
+      margin-bottom: 15px;
+    }
+
+    .admin-panel h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .admin-panel p {
+      margin: 0 0 15px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .admin-match {
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #0c0c0e;
+    }
+
+    .admin-match:last-child {
+      margin-bottom: 0;
+    }
+
+    .admin-match-name {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .admin-match-meta {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .admin-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 11px;
+    }
+
+    .admin-action {
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #18181a;
+      color: white;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .admin-action.delete {
+      color: #ff6262;
+    }
+
+    .admin-password-box {
+      margin-bottom: 17px;
+      padding: 13px;
+      border-radius: 13px;
+      background: #080808;
+      border: 1px solid var(--border);
+    }
+
+    .admin-password-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .8px;
+    }
+
+    .admin-password-value {
+      font-family: monospace;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    /* ================= TOAST ================= */
+
+    .toast-container {
+      position: fixed;
+      z-index: 9999;
+      left: 12px;
+      right: 12px;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      max-width: 92%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #171719;
+      color: white;
+      box-shadow: 0 10px 35px rgba(0,0,0,.45);
+      font-size: 11px;
+      font-weight: 800;
+      animation: toastIn .2s ease;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ================= DESKTOP ================= */
+
+    @media (min-width: 700px) {
+
+      main {
+        padding-top: 35px;
+      }
+
+      .matches {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .match-card {
+        min-height: 270px;
+      }
+
+      .hero {
+        padding-bottom: 30px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-    <!-- Live Green Pigment Background -->
-    <canvas id="pigmentCanvas"></canvas>
-    <script>
-        const cvs = document.getElementById('pigmentCanvas'), ctx = cvs.getContext('2d');
-        let w, h, parts = [];
-        function resize() { w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
-        for(let i=0; i<30; i++) parts.push({
-            x: Math.random()*w, y: Math.random()*h, s: Math.random()*120+50,
-            vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
-            c: ['rgba(15, 90, 42, 0.1)', 'rgba(37, 211, 102, 0.03)'][Math.floor(Math.random()*2)]
-        });
-        function anim() {
-            ctx.clearRect(0,0,w,h);
-            parts.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x < -p.s) p.x = w+p.s; if(p.x > w+p.s) p.x = -p.s;
-                if(p.y < -p.s) p.y = h+p.s; if(p.y > h+p.s) p.y = -p.s;
-                ctx.beginPath();
-                let g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s);
-                g.addColorStop(0, p.c); g.addColorStop(1, 'rgba(10,10,10,0)');
-                ctx.fillStyle = g; ctx.arc(p.x,p.y,p.s,0,Math.PI*2); ctx.fill();
-            });
-            requestAnimationFrame(anim);
+  <!-- ================= HEADER ================= -->
+
+  <header>
+
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      aria-label="Open admin menu"
+    >
+      ☰
+    </button>
+
+    <div class="brand">
+      <div class="brand-title">
+        SRV ESPORTS
+      </div>
+
+      <div class="brand-subtitle">
+        ESPORTS MATCH MANAGEMENT
+      </div>
+    </div>
+
+  </header>
+
+  <!-- ================= DRAWER ================= -->
+
+  <div
+    class="drawer-overlay"
+    id="drawerOverlay"
+  ></div>
+
+  <aside
+    class="drawer"
+    id="drawer"
+  >
+
+    <h2 class="drawer-title">
+      ADMIN PANEL
+    </h2>
+
+    <p class="drawer-subtitle">
+      SRV ESPORTS MANAGEMENT
+    </p>
+
+    <button
+      class="drawer-btn"
+      id="adminLoginBtn"
+    >
+      🔐 ADMIN LOGIN
+    </button>
+
+    <button
+      class="drawer-btn hidden"
+      id="dashboardBtn"
+    >
+      ⚙️ ADMIN DASHBOARD
+    </button>
+
+    <button
+      class="drawer-btn hidden danger"
+      id="logoutBtn"
+    >
+      🚪 LOGOUT
+    </button>
+
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+
+  <main>
+
+    <section class="hero">
+
+      <h1>
+        SRV <span>ESPORTS</span>
+      </h1>
+
+      <p>
+        ESPORTS MATCH MANAGEMENT
+      </p>
+
+    </section>
+
+    <!-- LINEUP TABS -->
+
+    <section>
+
+      <div class="lineup-tabs">
+
+        <button
+          class="lineup-tab active"
+          data-lineup="MAIN LINEUP"
+        >
+          MAIN LINEUP
+        </button>
+
+        <button
+          class="lineup-tab"
+          data-lineup="2ND LINEUP"
+        >
+          2ND LINEUP
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- MATCHES -->
+
+    <section>
+
+      <div class="section-head">
+
+        <h2 class="section-title">
+          UPCOMING MATCHES
+        </h2>
+
+        <span
+          class="match-count"
+          id="matchCount"
+        >
+          0 MATCHES
+        </span>
+
+      </div>
+
+      <div
+        id="matchesContainer"
+        class="matches"
+      >
+
+        <div class="state-box">
+
+          <div class="state-icon">
+            ⏳
+          </div>
+
+          <div class="state-title">
+            LOADING MATCHES
+          </div>
+
+          <div class="state-text">
+            Connecting to SRV ESPORTS database...
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL ================= -->
+
+  <div id="modalContainer"></div>
+
+  <!-- ================= TOAST ================= -->
+
+  <div
+    class="toast-container"
+    id="toastContainer"
+  ></div>
+
+  <!-- ================= FIREBASE ================= -->
+
+  <script type="module">
+
+    /*
+      ============================================================
+      SRV ESPORTS
+      Firebase Firestore Configuration
+      ============================================================
+    */
+
+    import {
+      initializeApp
+    } from
+      "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      doc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      serverTimestamp
+    } from
+      "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
+    /*
+      ============================================================
+      FIREBASE CONFIG
+      ============================================================
+    */
+
+    const firebaseConfig = {
+
+      apiKey:
+        "AIzaSyACC6nAbAb96Aw5NA-C2aTZ8-gtOsnYzE",
+
+      authDomain:
+        "survivors-b9c6d.firebaseapp.com",
+
+      projectId:
+        "survivors-b9c6d",
+
+      storageBucket:
+        "survivors-b9c6d.firebasestorage.app",
+
+      messagingSenderId:
+        "289481978081",
+
+      appId:
+        "1:289481978081:web:68e424068ff9d056d607a0",
+
+      measurementId:
+        "G-1XRC9SCV59"
+    };
+
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const db =
+      getFirestore(app);
+
+
+    /* ============================================================
+       APP STATE
+    ============================================================ */
+
+    const ADMIN_PASSWORD =
+      "SRV1122";
+
+    let allMatches = [];
+
+    let selectedLineup =
+      "MAIN LINEUP";
+
+    let adminLoggedIn =
+      false;
+
+    let unsubscribeMatches =
+      null;
+
+
+    /* ============================================================
+       DOM
+    ============================================================ */
+
+    const menuBtn =
+      document.getElementById("menuBtn");
+
+    const drawer =
+      document.getElementById("drawer");
+
+    const drawerOverlay =
+      document.getElementById("drawerOverlay");
+
+    const adminLoginBtn =
+      document.getElementById("adminLoginBtn");
+
+    const dashboardBtn =
+      document.getElementById("dashboardBtn");
+
+    const logoutBtn =
+      document.getElementById("logoutBtn");
+
+    const modalContainer =
+      document.getElementById("modalContainer");
+
+    const matchesContainer =
+      document.getElementById("matchesContainer");
+
+    const matchCount =
+      document.getElementById("matchCount");
+
+
+    /* ============================================================
+       UTILITIES
+    ============================================================ */
+
+    function escapeHTML(value) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return "";
+      }
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+
+    function showToast(message) {
+
+      const toast =
+        document.createElement("div");
+
+      toast.className =
+        "toast";
+
+      toast.textContent =
+        message;
+
+      document
+        .getElementById("toastContainer")
+        .appendChild(toast);
+
+      setTimeout(() => {
+
+        toast.remove();
+
+      }, 2600);
+    }
+
+
+    async function copyText(
+      text,
+      successMessage
+    ) {
+
+      try {
+
+        if (!navigator.clipboard) {
+          throw new Error(
+            "Clipboard API unavailable"
+          );
         }
-        anim();
-    </script>
 
-    <header>
-        <h1>PEO</h1>
-        <p>PAKISTAN ESPORTS ORGANIZATION</p>
-    </header>
+        await navigator.clipboard.writeText(text);
 
-    <!-- SECTION 1: UPDATES -->
-    <section id="updates" class="app-section active">
-        <h2 class="section-title">Latest Updates</h2>
-        <div id="updates-container">
-            <p style="color:var(--text-muted); text-align:center;">Loading updates...</p>
+        showToast(successMessage);
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          "COPY FAILED — CHECK BROWSER PERMISSION"
+        );
+      }
+    }
+
+
+    function closeModal() {
+
+      modalContainer.innerHTML = "";
+    }
+
+
+    function openModal(html) {
+
+      modalContainer.innerHTML = `
+
+        <div
+          class="modal-wrap"
+          id="modalBackdrop"
+        >
+
+          <div class="modal">
+
+            ${html}
+
+          </div>
+
         </div>
-    </section>
+      `;
 
-    <!-- SECTION 2: MATCHES -->
-    <section id="matches" class="app-section">
-        <h2 class="section-title">Upcoming & Live Matches</h2>
-        <div id="matches-container">
-            <p style="color:var(--text-muted); text-align:center;">Loading matches...</p>
-        </div>
-    </section>
+      const backdrop =
+        document.getElementById(
+          "modalBackdrop"
+        );
 
-    <!-- SECTION 3: PTS TABLE -->
-    <section id="pts-table" class="app-section">
-        <h2 class="section-title">Points Table</h2>
-        <div id="pts-container">
-            <p style="color:var(--text-muted); text-align:center;">Loading points table...</p>
-        </div>
-    </section>
+      backdrop.addEventListener(
+        "click",
+        (event) => {
 
-    <!-- SECTION 4: PROFILE & ADMIN -->
-    <section id="profile" class="app-section">
-        
-        <!-- Auth Section (Visible to Guests) -->
-        <div id="auth-section" class="data-card">
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tab-login">Login</div>
-                <div class="auth-tab" id="tab-register">Register</div>
-            </div>
+          if (
+            event.target === backdrop
+          ) {
+            closeModal();
+          }
 
-            <p id="auth-error" style="color:#ff4d4d; margin-bottom:15px; font-size:0.9rem; display:none; text-align:center;"></p>
-
-            <!-- Login Form -->
-            <div id="login-form">
-                <div class="form-group"><input type="email" id="login-email" placeholder="Email Address"></div>
-                <div class="form-group"><input type="password" id="login-pass" placeholder="Password"></div>
-                <button class="btn" id="login-btn">Secure Login</button>
-            </div>
-
-            <!-- Register Form -->
-            <div id="register-form" style="display:none;">
-                <div class="form-group"><input type="text" id="reg-nick" placeholder="In-Game Nickname"></div>
-                <div class="form-group"><input type="email" id="reg-email" placeholder="Email Address"></div>
-                <div class="form-group"><input type="password" id="reg-pass" placeholder="Password"></div>
-                <div class="form-group"><input type="password" id="reg-conf-pass" placeholder="Confirm Password"></div>
-                <button class="btn" id="reg-btn">Create Account</button>
-            </div>
-        </div>
-
-        <!-- Standard User Profile -->
-        <div id="user-section" class="data-card" style="display: none;">
-            <div class="user-profile-header">
-                <h2 id="display-nick">Player</h2>
-                <p id="display-email">user@gmail.com</p>
-            </div>
-            <a href="https://wa.me/923000000000" target="_blank" class="btn btn-support">💬 Customer Support</a>
-            <button class="btn btn-danger user-logout-btn">Log Out</button>
-        </div>
-
-        <!-- Admin Dashboard -->
-        <div id="admin-section" style="display: none;">
-            <div class="user-profile-header">
-                <h2>Admin Console</h2>
-                <p>Restricted Access</p>
-            </div>
-            
-            <div class="admin-box">
-                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Add New Update</h3>
-                <input type="text" id="upd-title" placeholder="Update Title" class="form-group">
-                <textarea id="upd-desc" placeholder="Update Description Details..." rows="3" class="form-group"></textarea>
-                <button class="btn" id="add-update-btn">Post Update</button>
-            </div>
-
-            <div class="admin-box">
-                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Add New Match</h3>
-                <input type="text" id="match-title" placeholder="Match (e.g. Team A vs Team B)" class="form-group">
-                <input type="text" id="match-time" placeholder="Time & Date (e.g. 8:00 PM, 12th Oct)" class="form-group">
-                <button class="btn" id="add-match-btn">Post Match</button>
-            </div>
-
-            <div class="admin-box">
-                <h3 style="color:var(--neon-green); margin-bottom: 10px;">+ Update Points Table Entry</h3>
-                <input type="text" id="pt-team" placeholder="Team Name" class="form-group">
-                <input type="number" id="pt-score" placeholder="Total Points" class="form-group">
-                <button class="btn" id="add-pt-btn">Add Team</button>
-            </div>
-
-            <button class="btn btn-danger user-logout-btn">Secure Log Out</button>
-        </div>
-    </section>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-btn active" onclick="switchTab('updates', this)">
-            <span class="nav-icon">📰</span>
-            UPDATES
-        </button>
-        <button class="nav-btn" onclick="switchTab('matches', this)">
-            <span class="nav-icon">⚔️</span>
-            MATCHES
-        </button>
-        <button class="nav-btn" onclick="switchTab('pts-table', this)">
-            <span class="nav-icon">🏆</span>
-            TABLE
-        </button>
-        <button class="nav-btn" onclick="switchTab('profile', this)">
-            <span class="nav-icon">👤</span>
-            PROFILE
-        </button>
-    </nav>
-
-    <!-- Tab Switching Logic -->
-    <script>
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
         }
+      );
+    }
 
-        // Auth Tabs Toggle
-        document.getElementById('tab-login').addEventListener('click', function() {
-            this.classList.add('active');
-            document.getElementById('tab-register').classList.remove('active');
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('auth-error').style.display = 'none';
-        });
 
-        document.getElementById('tab-register').addEventListener('click', function() {
-            this.classList.add('active');
-            document.getElementById('tab-login').classList.remove('active');
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('auth-error').style.display = 'none';
-        });
-    </script>
+    function openDrawer() {
 
-    <!-- Firebase Integration Module -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      drawer.classList.add("open");
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKtQSjsiyC8hKNP6_YIngnXqPI19rjr9w",
-            authDomain: "pak-esp-org.firebaseapp.com",
-            projectId: "pak-esp-org",
-            storageBucket: "pak-esp-org.firebasestorage.app",
-            messagingSenderId: "185358231882",
-            appId: "1:185358231882:web:c192f827b406e06fe0f9b3",
-            measurementId: "G-PNSR0YYB5R"
-        };
+      drawerOverlay.classList.add(
+        "open"
+      );
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // --- DOM Elements ---
-        const authSection = document.getElementById('auth-section');
-        const userSection = document.getElementById('user-section');
-        const adminSection = document.getElementById('admin-section');
-        const authError = document.getElementById('auth-error');
+    function closeDrawer() {
 
-        function showError(msg) {
-            authError.textContent = msg;
-            authError.style.display = 'block';
-        }
+      drawer.classList.remove(
+        "open"
+      );
 
-        // --- AUTH: Login & Register ---
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            authError.style.display = 'none';
+      drawerOverlay.classList.remove(
+        "open"
+      );
+    }
 
-            signInWithEmailAndPassword(auth, email, pass).catch(err => showError(err.message));
-        });
 
-        document.getElementById('reg-btn').addEventListener('click', () => {
-            const nick = document.getElementById('reg-nick').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            const confPass = document.getElementById('reg-conf-pass').value;
-            
-            authError.style.display = 'none';
-            if(!nick) return showError("Nickname is required!");
-            if(pass !== confPass) return showError("Passwords do not match!");
+    /*
+      ============================================================
+      MANUAL DATE / TIME
+      ============================================================
 
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then((cred) => {
-                    return updateProfile(cred.user, { displayName: nick });
-                })
-                .catch(err => showError(err.message));
-        });
+      These fields are intentionally NOT parsed.
 
-        document.querySelectorAll('.user-logout-btn').forEach(btn => {
-            btn.addEventListener('click', () => signOut(auth));
-        });
+      Whatever the admin writes is displayed exactly as entered.
 
-        // --- Auth State Routing ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authSection.style.display = 'none';
-                
-                // Admin specific routing
-                if (user.email === 'admin@gmail.com') {
-                    adminSection.style.display = 'block';
-                    userSection.style.display = 'none';
-                } else {
-                    // Standard User
-                    adminSection.style.display = 'none';
-                    userSection.style.display = 'block';
-                    document.getElementById('display-nick').textContent = user.displayName || 'Player';
-                    document.getElementById('display-email').textContent = user.email;
-                }
-            } else {
-                // Logged out guest
-                authSection.style.display = 'block';
-                userSection.style.display = 'none';
-                adminSection.style.display = 'none';
+      Example:
+
+      DATE:
+      10 October 2026
+
+      TIME:
+      8:00 PM
+    */
+
+    function formatDate(dateString) {
+
+      if (!dateString) {
+        return "DATE NOT SET";
+      }
+
+      return String(dateString);
+    }
+
+
+    function formatTime(timeString) {
+
+      if (!timeString) {
+        return "TIME NOT SET";
+      }
+
+      return String(timeString);
+    }
+
+
+    /*
+      No automatic date/time sorting is performed because
+      the admin can enter dates and times in any format.
+    */
+
+    function getMatchOrder(match) {
+
+      if (
+        match.createdAt &&
+        typeof match.createdAt.toMillis === "function"
+      ) {
+        return match.createdAt.toMillis();
+      }
+
+      return 0;
+    }
+
+
+    /* ============================================================
+       FIRESTORE
+    ============================================================ */
+
+    function startMatchListener() {
+
+      const matchesRef =
+        collection(
+          db,
+          "matches"
+        );
+
+      unsubscribeMatches =
+        onSnapshot(
+
+          matchesRef,
+
+          (snapshot) => {
+
+            allMatches = [];
+
+            snapshot.forEach(
+              (docSnap) => {
+
+                allMatches.push({
+
+                  id: docSnap.id,
+
+                  ...docSnap.data()
+
+                });
+
+              }
+            );
+
+            renderMatches();
+
+            if (
+              allMatches.length === 0
+            ) {
+
+              showToast(
+                "NO MATCHES AVAILABLE"
+              );
             }
-        });
 
-        // --- ADMIN: Database Controls ---
-        document.getElementById('add-update-btn').addEventListener('click', async () => {
-            const title = document.getElementById('upd-title').value;
-            const desc = document.getElementById('upd-desc').value;
-            if(!title || !desc) return alert("Fill all fields");
-            await addDoc(collection(db, "updates"), { title, desc, createdAt: serverTimestamp() });
-            alert("Update Added!");
-            loadData(); 
-        });
+          },
 
-        document.getElementById('add-match-btn').addEventListener('click', async () => {
-            const title = document.getElementById('match-title').value;
-            const time = document.getElementById('match-time').value;
-            if(!title || !time) return alert("Fill all fields");
-            await addDoc(collection(db, "matches"), { title, time, createdAt: serverTimestamp() });
-            alert("Match Added!");
-            loadData();
-        });
+          (error) => {
 
-        document.getElementById('add-pt-btn').addEventListener('click', async () => {
-            const team = document.getElementById('pt-team').value;
-            const score = parseInt(document.getElementById('pt-score').value);
-            if(!team || isNaN(score)) return alert("Fill all fields correctly");
-            await addDoc(collection(db, "pts_table"), { team, score, createdAt: serverTimestamp() });
-            alert("Points Table Updated!");
-            loadData();
-        });
+            console.error(
+              "Firestore error:",
+              error
+            );
 
-        // --- FETCH DATA FOR USERS ---
-        async function loadData() {
-            // Updates
-            const updQuery = query(collection(db, "updates"), orderBy("createdAt", "desc"));
-            const updSnap = await getDocs(updQuery);
-            let updHTML = '';
-            updSnap.forEach(doc => {
-                const data = doc.data();
-                updHTML += `<div class="data-card"><h3>${data.title}</h3><p>${data.desc}</p></div>`;
-            });
-            document.getElementById('updates-container').innerHTML = updHTML || "<p style='text-align:center;'>No updates yet.</p>";
+            matchesContainer.innerHTML = `
 
-            // Matches
-            const matchQuery = query(collection(db, "matches"), orderBy("createdAt", "desc"));
-            const matchSnap = await getDocs(matchQuery);
-            let matchHTML = '';
-            matchSnap.forEach(doc => {
-                const data = doc.data();
-                matchHTML += `<div class="data-card"><h3>${data.title}</h3><p>⏰ ${data.time}</p></div>`;
-            });
-            document.getElementById('matches-container').innerHTML = matchHTML || "<p style='text-align:center;'>No matches scheduled.</p>";
+              <div class="state-box">
 
-            // Pts Table 
-            const ptsQuery = query(collection(db, "pts_table"), orderBy("score", "desc"));
-            const ptsSnap = await getDocs(ptsQuery);
-            let ptsHTML = '';
-            let rank = 1;
-            ptsSnap.forEach(doc => {
-                const data = doc.data();
-                ptsHTML += `<div class="data-card" style="display:flex; justify-content:space-between; padding: 15px 20px;">
-                                <div><strong style="color:var(--neon-green)">#${rank}</strong> &nbsp; ${data.team}</div>
-                                <div><strong>${data.score} Pts</strong></div>
-                            </div>`;
-                rank++;
-            });
-            document.getElementById('pts-container').innerHTML = ptsHTML || "<p style='text-align:center;'>Points table is empty.</p>";
+                <div class="state-icon">
+                  ⚠️
+                </div>
+
+                <div class="state-title">
+                  FIREBASE CONNECTION FAILED
+                </div>
+
+                <div class="state-text">
+                  Check your Firebase configuration
+                  and Firestore Security Rules.
+                </div>
+
+              </div>
+            `;
+
+            showToast(
+              "FIREBASE CONNECTION FAILED"
+            );
+          }
+        );
+    }
+
+
+    /* ============================================================
+       RENDER MATCHES
+    ============================================================ */
+
+    function renderMatches() {
+
+      let filtered =
+        allMatches.filter(
+          match =>
+            match.lineup ===
+            selectedLineup
+        );
+
+
+      /*
+        Keep Firestore creation order.
+
+        This is intentional because date/time are now
+        free manual text and cannot safely be converted
+        into chronological timestamps.
+      */
+
+      filtered.sort(
+        (a, b) =>
+          getMatchOrder(a) -
+          getMatchOrder(b)
+      );
+
+
+      matchCount.textContent =
+        `${filtered.length} ${
+          filtered.length === 1
+            ? "MATCH"
+            : "MATCHES"
+        }`;
+
+
+      if (
+        filtered.length === 0
+      ) {
+
+        matchesContainer.innerHTML = `
+
+          <div class="state-box">
+
+            <div class="state-icon">
+              🎮
+            </div>
+
+            <div class="state-title">
+              NO MATCHES AVAILABLE
+            </div>
+
+            <div class="state-text">
+              There are currently no matches
+              scheduled for
+              ${escapeHTML(selectedLineup)}.
+            </div>
+
+          </div>
+        `;
+
+        return;
+      }
+
+
+      matchesContainer.innerHTML =
+        filtered
+          .map(matchCardHTML)
+          .join("");
+    }
+
+
+    function matchCardHTML(match) {
+
+      const status =
+        (match.status || "UPCOMING")
+          .toUpperCase();
+
+
+      const statusClass =
+        [
+          "UPCOMING",
+          "LIVE",
+          "COMPLETED",
+          "CANCELLED"
+        ].includes(status)
+          ? status.toLowerCase()
+          : "upcoming";
+
+
+      return `
+
+        <article class="match-card">
+
+          <div class="match-top">
+
+            <div>
+
+              <h3 class="match-name">
+                ${
+                  escapeHTML(
+                    match.name ||
+                    "UNTITLED MATCH"
+                  )
+                }
+              </h3>
+
+              <span class="lineup-label">
+                ${
+                  escapeHTML(
+                    match.lineup ||
+                    "MAIN LINEUP"
+                  )
+                }
+              </span>
+
+            </div>
+
+            <span
+              class="status ${statusClass}"
+            >
+              ${escapeHTML(status)}
+            </span>
+
+          </div>
+
+
+          <div class="match-details">
+
+            <div class="detail">
+              📅
+              <strong>
+                ${formatDate(match.date)}
+              </strong>
+            </div>
+
+
+            <div class="detail">
+              ⏰
+              <strong>
+                ${formatTime(match.time)}
+              </strong>
+            </div>
+
+
+            <div class="detail">
+              🎮
+              <strong>
+                ${
+                  escapeHTML(
+                    match.map ||
+                    "MODE NOT SET"
+                  )
+                }
+              </strong>
+            </div>
+
+
+            <div class="detail">
+              🏆
+              <strong>
+                ${
+                  escapeHTML(
+                    match.lineup || ""
+                  )
+                }
+              </strong>
+            </div>
+
+          </div>
+
+
+          ${
+            match.description
+              ? `
+
+                <p class="description">
+
+                  ${
+                    escapeHTML(
+                      match.description
+                    )
+                  }
+
+                </p>
+
+              `
+              : ""
+          }
+
+
+          <button
+            class="idp-btn"
+            data-action="view-idp"
+            data-id="${escapeHTML(match.id)}"
+          >
+            🔑 VIEW IDP
+          </button>
+
+        </article>
+      `;
+    }
+
+
+    /* ============================================================
+       IDP MODAL
+    ============================================================ */
+
+    function showIDP(matchId) {
+
+      const match =
+        allMatches.find(
+          m => m.id === matchId
+        );
+
+
+      if (!match) {
+
+        showToast(
+          "MATCH NOT FOUND"
+        );
+
+        return;
+      }
+
+
+      const idp =
+        String(
+          match.idp || ""
+        ).trim();
+
+
+      if (!idp) {
+
+        openModal(`
+
+          <div class="modal-head">
+
+            <h2 class="modal-title">
+              MATCH IDP
+            </h2>
+
+            <button
+              class="close-btn"
+              data-action="close-modal"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div class="idp-display">
+
+            <div class="idp-unavailable">
+              IDP NOT AVAILABLE YET
+            </div>
+
+          </div>
+
+
+          <button
+            class="secondary-btn"
+            data-action="close-modal"
+          >
+            CLOSE
+          </button>
+
+        `);
+
+        return;
+      }
+
+
+      openModal(`
+
+        <div class="modal-head">
+
+          <h2 class="modal-title">
+            MATCH IDP
+          </h2>
+
+          <button
+            class="close-btn"
+            data-action="close-modal"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="idp-display">
+
+          <div class="idp-value">
+            ${escapeHTML(idp)}
+          </div>
+
+        </div>
+
+
+        <button
+          class="primary-btn"
+          data-action="copy-idp"
+          data-copy="${escapeHTML(idp)}"
+        >
+          📋 COPY IDP
+        </button>
+
+
+        <button
+          class="secondary-btn"
+          data-action="close-modal"
+        >
+          CLOSE
+        </button>
+
+      `);
+    }
+
+
+    /* ============================================================
+       ADMIN LOGIN
+    ============================================================ */
+
+    function showAdminLogin() {
+
+      openModal(`
+
+        <div class="modal-head">
+
+          <h2 class="modal-title">
+            ADMIN LOGIN
+          </h2>
+
+          <button
+            class="close-btn"
+            data-action="close-modal"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            ADMIN PASSWORD
+          </label>
+
+
+          <div class="password-row">
+
+            <input
+              id="adminPasswordInput"
+              class="input"
+              type="password"
+              placeholder="Enter admin password"
+              autocomplete="current-password"
+            >
+
+
+            <button
+              class="mini-btn"
+              id="togglePasswordBtn"
+              type="button"
+            >
+              SHOW
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="primary-btn"
+          data-action="login"
+        >
+          🔐 LOGIN
+        </button>
+
+
+        <button
+          class="secondary-btn"
+          data-action="copy-password"
+        >
+          📋 COPY PASSWORD
+        </button>
+
+      `);
+
+
+      const input =
+        document.getElementById(
+          "adminPasswordInput"
+        );
+
+      const toggle =
+        document.getElementById(
+          "togglePasswordBtn"
+        );
+
+
+      toggle.addEventListener(
+        "click",
+        () => {
+
+          if (
+            input.type ===
+            "password"
+          ) {
+
+            input.type = "text";
+
+            toggle.textContent =
+              "HIDE";
+
+          } else {
+
+            input.type =
+              "password";
+
+            toggle.textContent =
+              "SHOW";
+          }
+
+        }
+      );
+
+
+      setTimeout(
+        () => input.focus(),
+        100
+      );
+    }
+
+
+    function adminLogin() {
+
+      const input =
+        document.getElementById(
+          "adminPasswordInput"
+        );
+
+
+      if (!input) return;
+
+
+      if (
+        input.value ===
+        ADMIN_PASSWORD
+      ) {
+
+        adminLoggedIn = true;
+
+        closeModal();
+
+        dashboardBtn.classList.remove(
+          "hidden"
+        );
+
+        logoutBtn.classList.remove(
+          "hidden"
+        );
+
+        adminLoginBtn.classList.add(
+          "hidden"
+        );
+
+        closeDrawer();
+
+        showToast(
+          "✓ ADMIN LOGIN SUCCESSFUL"
+        );
+
+        showAdminDashboard();
+
+      } else {
+
+        showToast(
+          "INVALID ADMIN PASSWORD"
+        );
+
+        input.value = "";
+
+        input.focus();
+      }
+    }
+
+
+    function adminLogout() {
+
+      adminLoggedIn = false;
+
+      dashboardBtn.classList.add(
+        "hidden"
+      );
+
+      logoutBtn.classList.add(
+        "hidden"
+      );
+
+      adminLoginBtn.classList.remove(
+        "hidden"
+      );
+
+      closeDrawer();
+
+      showToast(
+        "ADMIN LOGGED OUT"
+      );
+    }
+
+
+    /* ============================================================
+       ADMIN DASHBOARD
+    ============================================================ */
+
+    function showAdminDashboard(
+      editMatch = null
+    ) {
+
+      if (!adminLoggedIn) {
+
+        showAdminLogin();
+
+        return;
+      }
+
+
+      const isEditing =
+        Boolean(editMatch);
+
+
+      openModal(`
+
+        <div class="modal-head">
+
+          <h2 class="modal-title">
+
+            ${
+              isEditing
+                ? "EDIT MATCH"
+                : "ADMIN DASHBOARD"
+            }
+
+          </h2>
+
+
+          <button
+            class="close-btn"
+            data-action="close-modal"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- ADMIN PASSWORD -->
+
+        <div class="admin-password-box">
+
+          <span class="admin-password-label">
+            ADMIN PASSWORD
+          </span>
+
+
+          <div class="password-row">
+
+            <span
+              id="adminPasswordDisplay"
+              class="admin-password-value"
+              style="flex:1"
+            >
+              ••••••
+            </span>
+
+
+            <button
+              class="mini-btn"
+              id="showAdminPasswordBtn"
+              type="button"
+            >
+              SHOW
+            </button>
+
+          </div>
+
+
+          <button
+            class="secondary-btn"
+            data-action="copy-password"
+          >
+            📋 COPY PASSWORD
+          </button>
+
+        </div>
+
+
+        <!-- MATCH FORM -->
+
+        <div class="admin-panel">
+
+          <h3>
+
+            ${
+              isEditing
+                ? "UPDATE MATCH"
+                : "ADD MATCH"
+            }
+
+          </h3>
+
+
+          <p>
+
+            ${
+              isEditing
+                ? "Update the selected match information."
+                : "Create a new SRV ESPORTS match."
+            }
+
+          </p>
+
+
+          <form id="matchForm">
+
+
+            <input
+              type="hidden"
+              id="editingMatchId"
+              value="${
+                isEditing
+                  ? escapeHTML(
+                      editMatch.id
+                    )
+                  : ""
+              }"
+            >
+
+
+            <!-- MATCH NAME -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                MATCH NAME
+              </label>
+
+
+              <input
+                class="input"
+                id="matchName"
+                required
+                value="${
+                  isEditing
+                    ? escapeHTML(
+                        editMatch.name ||
+                        ""
+                      )
+                    : ""
+                }"
+                placeholder="TRY BROTHER CS"
+              >
+
+            </div>
+
+
+            <!-- LINEUP -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                LINEUP
+              </label>
+
+
+              <select
+                class="select"
+                id="matchLineup"
+                required
+              >
+
+                <option
+                  value="MAIN LINEUP"
+                  ${
+                    !isEditing ||
+                    editMatch.lineup ===
+                      "MAIN LINEUP"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  MAIN LINEUP
+                </option>
+
+
+                <option
+                  value="2ND LINEUP"
+                  ${
+                    isEditing &&
+                    editMatch.lineup ===
+                      "2ND LINEUP"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  2ND LINEUP
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- MANUAL DATE -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                DATE
+              </label>
+
+
+              <input
+                class="input"
+                id="matchDate"
+                type="text"
+                required
+                autocomplete="off"
+                value="${
+                  isEditing
+                    ? escapeHTML(
+                        editMatch.date ||
+                        ""
+                      )
+                    : ""
+                }"
+                placeholder="10 October 2026"
+              >
+
+            </div>
+
+
+            <!-- MANUAL TIME -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                TIME
+              </label>
+
+
+              <input
+                class="input"
+                id="matchTime"
+                type="text"
+                required
+                autocomplete="off"
+                value="${
+                  isEditing
+                    ? escapeHTML(
+                        editMatch.time ||
+                        ""
+                      )
+                    : ""
+                }"
+                placeholder="8:00 PM"
+              >
+
+            </div>
+
+
+            <!-- MAP -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                MAP / MODE
+              </label>
+
+
+              <input
+                class="input"
+                id="matchMap"
+                value="${
+                  isEditing
+                    ? escapeHTML(
+                        editMatch.map ||
+                        ""
+                      )
+                    : ""
+                }"
+                placeholder="CS MATCH"
+              >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                DESCRIPTION
+              </label>
+
+
+              <textarea
+                class="textarea"
+                id="matchDescription"
+                placeholder="Round 1 — Be ready before match time."
+              >${
+                isEditing
+                  ? escapeHTML(
+                      editMatch.description ||
+                      ""
+                    )
+                  : ""
+              }</textarea>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                STATUS
+              </label>
+
+
+              <select
+                class="select"
+                id="matchStatus"
+              >
+
+                <option
+                  value="UPCOMING"
+                  ${
+                    !isEditing ||
+                    editMatch.status ===
+                      "UPCOMING"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  UPCOMING
+                </option>
+
+
+                <option
+                  value="LIVE"
+                  ${
+                    isEditing &&
+                    editMatch.status ===
+                      "LIVE"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  LIVE
+                </option>
+
+
+                <option
+                  value="COMPLETED"
+                  ${
+                    isEditing &&
+                    editMatch.status ===
+                      "COMPLETED"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  COMPLETED
+                </option>
+
+
+                <option
+                  value="CANCELLED"
+                  ${
+                    isEditing &&
+                    editMatch.status ===
+                      "CANCELLED"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  CANCELLED
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- IDP -->
+
+            <div class="form-group">
+
+              <label class="form-label">
+                IDP — OPTIONAL
+              </label>
+
+
+              <input
+                class="input"
+                id="matchIDP"
+                value="${
+                  isEditing
+                    ? escapeHTML(
+                        editMatch.idp ||
+                        ""
+                      )
+                    : ""
+                }"
+                placeholder="Enter IDP when available"
+                inputmode="numeric"
+              >
+
+            </div>
+
+
+            <button
+              class="primary-btn"
+              type="submit"
+            >
+
+              ${
+                isEditing
+                  ? "SAVE CHANGES"
+                  : "SAVE MATCH"
+              }
+
+            </button>
+
+
+            ${
+              isEditing
+                ? `
+
+                  <button
+                    class="secondary-btn"
+                    type="button"
+                    data-action="cancel-edit"
+                  >
+                    CANCEL
+                  </button>
+
+                `
+                : ""
+            }
+
+
+          </form>
+
+        </div>
+
+
+        ${
+          !isEditing
+            ? `
+
+              <div class="admin-panel">
+
+                <h3>
+                  MANAGE MATCHES
+                </h3>
+
+
+                <p>
+                  Edit, delete or update IDPs.
+                </p>
+
+
+                <div id="adminMatchesList">
+
+                  ${renderAdminMatches()}
+
+                </div>
+
+              </div>
+
+            `
+            : ""
         }
 
-        loadData();
-    </script>
+      `);
+
+
+      const form =
+        document.getElementById(
+          "matchForm"
+        );
+
+
+      form.addEventListener(
+        "submit",
+        saveMatch
+      );
+
+
+      const passwordDisplay =
+        document.getElementById(
+          "adminPasswordDisplay"
+        );
+
+
+      const passwordButton =
+        document.getElementById(
+          "showAdminPasswordBtn"
+        );
+
+
+      if (passwordButton) {
+
+        passwordButton.addEventListener(
+          "click",
+          () => {
+
+            if (
+              passwordDisplay.textContent ===
+              "••••••"
+            ) {
+
+              passwordDisplay.textContent =
+                ADMIN_PASSWORD;
+
+              passwordButton.textContent =
+                "HIDE";
+
+            } else {
+
+              passwordDisplay.textContent =
+                "••••••";
+
+              passwordButton.textContent =
+                "SHOW";
+            }
+
+          }
+        );
+      }
+    }
+
+
+    /* ============================================================
+       ADMIN MATCH LIST
+    ============================================================ */
+
+    function renderAdminMatches() {
+
+      if (!allMatches.length) {
+
+        return `
+
+          <div class="state-box">
+
+            <div class="state-icon">
+              🎮
+            </div>
+
+            <div class="state-title">
+              NO MATCHES
+            </div>
+
+            <div class="state-text">
+              Add your first match above.
+            </div>
+
+          </div>
+        `;
+      }
+
+
+      /*
+        Keep creation order because dates/times
+        are free manual text.
+      */
+
+      const sorted =
+        [...allMatches].sort(
+          (a, b) =>
+            getMatchOrder(a) -
+            getMatchOrder(b)
+        );
+
+
+      return sorted
+        .map(match => {
+
+          return `
+
+            <div class="admin-match">
+
+              <div class="admin-match-name">
+                ${
+                  escapeHTML(
+                    match.name ||
+                    "UNTITLED MATCH"
+                  )
+                }
+              </div>
+
+
+              <div class="admin-match-meta">
+
+                ${
+                  escapeHTML(
+                    match.lineup || ""
+                  )
+                }
+
+                •
+
+                ${formatDate(match.date)}
+
+                •
+
+                ${formatTime(match.time)}
+
+                •
+
+                IDP:
+                ${
+                  match.idp
+                    ? "AVAILABLE"
+                    : "NOT SET"
+                }
+
+              </div>
+
+
+              <div class="admin-actions">
+
+                <button
+                  class="admin-action"
+                  data-action="edit-match"
+                  data-id="${escapeHTML(match.id)}"
+                >
+                  EDIT
+                </button>
+
+
+                <button
+                  class="admin-action"
+                  data-action="edit-idp"
+                  data-id="${escapeHTML(match.id)}"
+                >
+                  EDIT IDP
+                </button>
+
+
+                <button
+                  class="admin-action delete"
+                  data-action="delete-match"
+                  data-id="${escapeHTML(match.id)}"
+                >
+                  DELETE
+                </button>
+
+              </div>
+
+            </div>
+          `;
+
+        })
+        .join("");
+    }
+
+
+    /* ============================================================
+       SAVE MATCH
+    ============================================================ */
+
+    async function saveMatch(event) {
+
+      event.preventDefault();
+
+
+      if (!adminLoggedIn) {
+
+        showToast(
+          "ADMIN LOGIN REQUIRED"
+        );
+
+        return;
+      }
+
+
+      const id =
+        document.getElementById(
+          "editingMatchId"
+        ).value;
+
+
+      /*
+        DATE and TIME are saved exactly
+        as manually typed by the admin.
+      */
+
+      const matchData = {
+
+        name:
+          document.getElementById(
+            "matchName"
+          ).value.trim(),
+
+
+        lineup:
+          document.getElementById(
+            "matchLineup"
+          ).value,
+
+
+        date:
+          document.getElementById(
+            "matchDate"
+          ).value.trim(),
+
+
+        time:
+          document.getElementById(
+            "matchTime"
+          ).value.trim(),
+
+
+        map:
+          document.getElementById(
+            "matchMap"
+          ).value.trim(),
+
+
+        description:
+          document.getElementById(
+            "matchDescription"
+          ).value.trim(),
+
+
+        status:
+          document.getElementById(
+            "matchStatus"
+          ).value,
+
+
+        idp:
+          document.getElementById(
+            "matchIDP"
+          ).value.trim(),
+
+
+        updatedAt:
+          serverTimestamp()
+      };
+
+
+      try {
+
+        if (id) {
+
+          await updateDoc(
+
+            doc(
+              db,
+              "matches",
+              id
+            ),
+
+            matchData
+
+          );
+
+
+          showToast(
+            "✓ MATCH SUCCESSFULLY UPDATED"
+          );
+
+        } else {
+
+          await addDoc(
+
+            collection(
+              db,
+              "matches"
+            ),
+
+            {
+              ...matchData,
+
+              createdAt:
+                serverTimestamp()
+            }
+
+          );
+
+
+          showToast(
+            "✓ MATCH SUCCESSFULLY ADDED"
+          );
+        }
+
+
+        showAdminDashboard();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          "SAVE FAILED — CHECK FIRESTORE RULES"
+        );
+      }
+    }
+
+
+    /* ============================================================
+       EDIT IDP
+    ============================================================ */
+
+    function editIDP(matchId) {
+
+      const match =
+        allMatches.find(
+          m => m.id === matchId
+        );
+
+
+      if (!match) {
+
+        showToast(
+          "MATCH NOT FOUND"
+        );
+
+        return;
+      }
+
+
+      openModal(`
+
+        <div class="modal-head">
+
+          <h2 class="modal-title">
+            EDIT IDP
+          </h2>
+
+
+          <button
+            class="close-btn"
+            data-action="close-modal"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <p style="
+          color:#aaa;
+          font-size:11px;
+          line-height:1.5;
+          margin-top:-8px;
+        ">
+
+          ${
+            escapeHTML(
+              match.name ||
+              "MATCH"
+            )
+          }
+
+        </p>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            MATCH IDP
+          </label>
+
+
+          <input
+            id="editIDPInput"
+            class="input"
+            value="${escapeHTML(match.idp || "")}"
+            placeholder="Leave empty to remove IDP"
+            inputmode="numeric"
+          >
+
+        </div>
+
+
+        <button
+          class="primary-btn"
+          data-action="save-idp"
+          data-id="${escapeHTML(match.id)}"
+        >
+          SAVE IDP
+        </button>
+
+
+        <button
+          class="secondary-btn"
+          data-action="close-modal"
+        >
+          CANCEL
+        </button>
+
+      `);
+    }
+
+
+    async function saveIDP(matchId) {
+
+      if (!adminLoggedIn) {
+
+        showToast(
+          "ADMIN LOGIN REQUIRED"
+        );
+
+        return;
+      }
+
+
+      const input =
+        document.getElementById(
+          "editIDPInput"
+        );
+
+
+      if (!input) return;
+
+
+      const newIDP =
+        input.value.trim();
+
+
+      try {
+
+        await updateDoc(
+
+          doc(
+            db,
+            "matches",
+            matchId
+          ),
+
+          {
+            idp: newIDP,
+
+            updatedAt:
+              serverTimestamp()
+          }
+
+        );
+
+
+        closeModal();
+
+
+        showToast(
+          "✓ IDP SUCCESSFULLY UPDATED"
+        );
+
+
+        setTimeout(
+          () => {
+            showAdminDashboard();
+          },
+          250
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          "IDP UPDATE FAILED"
+        );
+      }
+    }
+
+
+    /* ============================================================
+       DELETE MATCH
+    ============================================================ */
+
+    async function deleteMatch(matchId) {
+
+      if (!adminLoggedIn) {
+
+        showToast(
+          "ADMIN LOGIN REQUIRED"
+        );
+
+        return;
+      }
+
+
+      const match =
+        allMatches.find(
+          m => m.id === matchId
+        );
+
+
+      if (!match) return;
+
+
+      openModal(`
+
+        <div class="modal-head">
+
+          <h2 class="modal-title">
+            DELETE MATCH
+          </h2>
+
+
+          <button
+            class="close-btn"
+            data-action="close-modal"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <p style="
+          color:#aaa;
+          font-size:12px;
+          line-height:1.6;
+        ">
+
+          Delete
+
+          <strong style="color:white">
+
+            ${
+              escapeHTML(
+                match.name
+              )
+            }
+
+          </strong>
+
+          permanently from Firestore?
+
+        </p>
+
+
+        <button
+          class="danger-btn"
+          data-action="confirm-delete"
+          data-id="${escapeHTML(match.id)}"
+        >
+          DELETE MATCH
+        </button>
+
+
+        <button
+          class="secondary-btn"
+          data-action="close-modal"
+        >
+          CANCEL
+        </button>
+
+      `);
+    }
+
+
+    async function confirmDelete(
+      matchId
+    ) {
+
+      try {
+
+        await deleteDoc(
+
+          doc(
+            db,
+            "matches",
+            matchId
+          )
+
+        );
+
+
+        closeModal();
+
+
+        showToast(
+          "✓ MATCH SUCCESSFULLY DELETED"
+        );
+
+
+        setTimeout(
+          () => {
+            showAdminDashboard();
+          },
+          250
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          "DELETE FAILED — CHECK FIRESTORE RULES"
+        );
+      }
+    }
+
+
+    /* ============================================================
+       EVENT DELEGATION
+    ============================================================ */
+
+    document.addEventListener(
+      "click",
+      async (event) => {
+
+        const button =
+          event.target.closest(
+            "[data-action]"
+          );
+
+
+        if (!button) return;
+
+
+        const action =
+          button.dataset.action;
+
+
+        const id =
+          button.dataset.id;
+
+
+        switch (action) {
+
+          case "close-modal":
+
+            closeModal();
+
+            break;
+
+
+          case "view-idp":
+
+            showIDP(id);
+
+            break;
+
+
+          case "copy-idp":
+
+            await copyText(
+
+              button.dataset.copy,
+
+              "✓ IDP COPIED"
+
+            );
+
+            break;
+
+
+          case "copy-password":
+
+            await copyText(
+
+              ADMIN_PASSWORD,
+
+              "✓ PASSWORD COPIED"
+
+            );
+
+            break;
+
+
+          case "login":
+
+            adminLogin();
+
+            break;
+
+
+          case "edit-match": {
+
+            const match =
+              allMatches.find(
+                m => m.id === id
+              );
+
+
+            if (match) {
+
+              showAdminDashboard(
+                match
+              );
+
+            }
+
+            break;
+          }
+
+
+          case "edit-idp":
+
+            editIDP(id);
+
+            break;
+
+
+          case "save-idp":
+
+            await saveIDP(id);
+
+            break;
+
+
+          case "delete-match":
+
+            deleteMatch(id);
+
+            break;
+
+
+          case "confirm-delete":
+
+            await confirmDelete(id);
+
+            break;
+
+
+          case "cancel-edit":
+
+            showAdminDashboard();
+
+            break;
+        }
+
+      }
+    );
+
+
+    /* ============================================================
+       LINEUP TABS
+    ============================================================ */
+
+    document
+      .querySelectorAll(
+        ".lineup-tab"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            document
+              .querySelectorAll(
+                ".lineup-tab"
+              )
+              .forEach(tab =>
+                tab.classList.remove(
+                  "active"
+                )
+              );
+
+
+            button.classList.add(
+              "active"
+            );
+
+
+            selectedLineup =
+              button.dataset.lineup;
+
+
+            renderMatches();
+
+          }
+        );
+
+      });
+
+
+    /* ============================================================
+       DRAWER
+    ============================================================ */
+
+    menuBtn.addEventListener(
+      "click",
+      openDrawer
+    );
+
+
+    drawerOverlay.addEventListener(
+      "click",
+      closeDrawer
+    );
+
+
+    adminLoginBtn.addEventListener(
+      "click",
+      () => {
+
+        closeDrawer();
+
+        showAdminLogin();
+
+      }
+    );
+
+
+    dashboardBtn.addEventListener(
+      "click",
+      () => {
+
+        closeDrawer();
+
+        showAdminDashboard();
+
+      }
+    );
+
+
+    logoutBtn.addEventListener(
+      "click",
+      adminLogout
+    );
+
+
+    /* ============================================================
+       KEYBOARD
+    ============================================================ */
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+
+          closeModal();
+
+          closeDrawer();
+        }
+
+
+        if (
+
+          event.key ===
+          "Enter" &&
+
+          document.getElementById(
+            "adminPasswordInput"
+          )
+
+        ) {
+
+          adminLogin();
+        }
+
+      }
+    );
+
+
+    /* ============================================================
+       FIREBASE START
+    ============================================================ */
+
+    try {
+
+      startMatchListener();
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      matchesContainer.innerHTML = `
+
+        <div class="state-box">
+
+          <div class="state-icon">
+            ⚠️
+          </div>
+
+
+          <div class="state-title">
+            FIREBASE FAILED TO LOAD
+          </div>
+
+
+          <div class="state-text">
+            Please check the Firebase configuration.
+          </div>
+
+        </div>
+      `;
+
+
+      showToast(
+        "FIREBASE FAILED TO LOAD"
+      );
+    }
+
+  </script>
+
 </body>
 </html>
+
+This version now lets you manually enter any date and time format, and the exact text you enter is shown on the match card.
